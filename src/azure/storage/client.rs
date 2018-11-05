@@ -6,10 +6,6 @@ use hyper::{self, Method};
 use hyper_tls;
 use std::borrow::Borrow;
 
-// Can be variant for different cloud environment
-const SERVICE_SUFFIX_BLOB: &str = ".blob.core.windows.net";
-const SERVICE_SUFFIX_TABLE: &str = ".table.core.windows.net";
-
 pub trait Blob {
     fn list_blobs<'a>(&'a self) -> blob::requests::ListBlobBuilder<'a, No>;
     fn get_blob<'a>(&'a self) -> blob::requests::GetBlobBuilder<'a, No, No>;
@@ -51,6 +47,7 @@ pub struct Client {
     key: String,
     hc: hyper::Client<hyper_tls::HttpsConnector<hyper::client::HttpConnector>>,
     blob_uri: String,
+    table_uri: String,
 }
 
 impl Blob for Client {
@@ -185,6 +182,7 @@ impl Client {
                 key: "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==".to_owned(),
                 hc: client,
                 blob_uri: "http://127.0.0.1:10000/devstoreaccount1".to_owned(),
+                table_uri: "http://127.0.0.1:10002/devstoreaccount1".to_owned(),
             })
         } else {
             Ok(Client {
@@ -192,6 +190,7 @@ impl Client {
                 key: key.to_owned(),
                 hc: client,
                 blob_uri: format!("https://{}.blob.core.windows.net", account),
+                table_uri: format!("https://{}.table.core.windows.net", account),
             })
         }
     }
@@ -207,6 +206,11 @@ impl Client {
     #[inline]
     pub(crate) fn blob_uri(&self) -> &str {
         &self.blob_uri
+    }
+
+    #[inline]
+    pub(crate) fn table_uri(&self) -> &str {
+        &self.table_uri
     }
 
     pub(crate) fn perform_request<F>(
@@ -246,12 +250,9 @@ impl Client {
 
     /// Uri scheme + authority e.g. http://myaccount.table.core.windows.net/
     pub(crate) fn get_uri_prefix(&self, service_type: ServiceType) -> String {
-        "https://".to_owned()
-            + self.account()
-            + match service_type {
-                ServiceType::Blob => SERVICE_SUFFIX_BLOB,
-                ServiceType::Table => SERVICE_SUFFIX_TABLE,
-            }
-            + "/"
+        match service_type {
+            ServiceType::Blob => format!("{}/", self.blob_uri()),
+            ServiceType::Table => format!("{}/", self.table_uri()),
+        }
     }
 }
