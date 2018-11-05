@@ -67,7 +67,8 @@ fn string_to_sign(h: &HeaderMap, u: &url::Url, method: &Method, service_type: Se
                 add_if_exists(h, header::CONTENT_TYPE),
                 add_if_exists(h, HEADER_DATE),
                 canonicalized_resource_table(u)
-            ).unwrap();
+            )
+            .unwrap();
             s
         }
         _ => {
@@ -95,7 +96,8 @@ fn string_to_sign(h: &HeaderMap, u: &url::Url, method: &Method, service_type: Se
                 add_if_exists(h, header::RANGE),
                 canonicalize_header(h),
                 canonicalized_resource(u)
-            ).unwrap();
+            )
+            .unwrap();
             s
         }
     }
@@ -146,6 +148,10 @@ fn get_account(u: &url::Url) -> String {
 
             let first_dot = dm.find('.').unwrap();
             String::from(&dm[0..first_dot])
+        }
+        url::Host::Ipv4(addr) => {
+            // this must be the emulator
+            "devstoreaccount1".to_owned()
         }
         _ => panic!("only Domains are supported in canonicalized_resource"),
     }
@@ -341,7 +347,8 @@ Wed, 03 May 2017 14:04:56 GMT
         let url = url::Url::parse(
             "http://myaccount.blob.core.windows.\
              net/mycontainer?restype=container&comp=metadata",
-        ).unwrap();
+        )
+        .unwrap();
         assert_eq!(
             super::canonicalized_resource(&url),
             "/myaccount/mycontainer\ncomp:metadata\nrestype:container"
@@ -354,7 +361,8 @@ Wed, 03 May 2017 14:04:56 GMT
             "http://myaccount.blob.core.windows.\
              net/mycontainer?restype=container&comp=list&include=snapshots&\
              include=metadata&include=uncommittedblobs",
-        ).unwrap();
+        )
+        .unwrap();
         assert_eq!(
             super::canonicalized_resource(&url),
             "/myaccount/mycontainer\ncomp:list\ninclude:metadata,snapshots,\
@@ -367,7 +375,8 @@ Wed, 03 May 2017 14:04:56 GMT
         let url = url::Url::parse(
             "https://myaccount-secondary.blob.core.windows.\
              net/mycontainer/myblob",
-        ).unwrap();
+        )
+        .unwrap();
         assert_eq!(super::canonicalized_resource(&url), "/myaccount-secondary/mycontainer/myblob");
     }
 

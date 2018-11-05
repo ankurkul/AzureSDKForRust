@@ -179,19 +179,19 @@ impl Client {
 
         let client = hyper::Client::builder().build(hyper_tls::HttpsConnector::new(4)?);
 
-        if cfg!(emulator) {
+        if cfg!(feature = "emulator") {
             Ok(Client {
                 account: "devstoreaccount1".to_owned(),
                 key: "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==".to_owned(),
                 hc: client,
-                blob_uri: "http://127.0.0.1:10000/".to_owned(),
+                blob_uri: "http://127.0.0.1:10000".to_owned(),
             })
         } else {
             Ok(Client {
                 account: account.to_owned(),
                 key: key.to_owned(),
                 hc: client,
-                blob_uri: format!("https://{}.blob.core.windows.net/", account),
+                blob_uri: format!("https://{}.blob.core.windows.net", account),
             })
         }
     }
