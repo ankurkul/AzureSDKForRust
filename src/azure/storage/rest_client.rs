@@ -141,17 +141,17 @@ fn canonicalize_header(h: &HeaderMap) -> String {
 }
 
 #[inline]
-fn get_account(u: &url::Url) -> String {
+fn get_account(u: &url::Url) -> &str {
     match u.host().unwrap().clone() {
         url::Host::Domain(dm) => {
             // debug!("dom == {:?}", dm);
 
             let first_dot = dm.find('.').unwrap();
-            String::from(&dm[0..first_dot])
+            &dm[0..first_dot]
         }
         url::Host::Ipv4(addr) => {
             // this must be the emulator
-            "devstoreaccount1".to_owned()
+            "devstoreaccount1"
         }
         _ => panic!("only Domains are supported in canonicalized_resource"),
     }
