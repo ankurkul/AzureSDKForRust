@@ -184,7 +184,7 @@ impl Client {
                 account: "devstoreaccount1".to_owned(),
                 key: "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==".to_owned(),
                 hc: client,
-                blob_uri: "http://127.0.0.1:10000".to_owned(),
+                blob_uri: "http://127.0.0.1:10000/devstoreaccount1".to_owned(),
             })
         } else {
             Ok(Client {

@@ -149,7 +149,7 @@ fn get_account(u: &url::Url) -> String {
             let first_dot = dm.find('.').unwrap();
             String::from(&dm[0..first_dot])
         }
-        url::Host::Ipv4(addr) => {
+        url::Host::Ipv4(_) => {
             // this must be the emulator
             "devstoreaccount1".to_owned()
         }
