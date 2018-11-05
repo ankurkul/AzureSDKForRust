@@ -46,10 +46,11 @@ pub trait Container {
 }
 
 #[derive(Debug, Clone)]
-pub struct Client {
+pub struct Client<'a> {
     account: String,
     key: String,
     hc: hyper::Client<hyper_tls::HttpsConnector<hyper::client::HttpConnector>>,
+    blob_uri: std::borrow::Cow<&'a str>,
 }
 
 impl Blob for Client {
@@ -178,11 +179,16 @@ impl Client {
 
         let client = hyper::Client::builder().build(hyper_tls::HttpsConnector::new(4)?);
 
-        Ok(Client {
+        let mut c =         Ok(Client {
             account: account.to_owned(),
             key: key.to_owned(),
             hc: client,
-        })
+            blob_uri: "http://127.0.0.1:10000/"
+        });
+        
+        if !cfg!(emulator) { c.blob_uri = format!("https://{}.blob.core.windows.net/", account); }
+
+        c
     }
 
     pub fn account(&self) -> &str {
@@ -191,6 +197,11 @@ impl Client {
 
     pub fn key(&self) -> &str {
         &self.key
+    }
+
+    #[inline]
+    pub(crate) fn blob_uri(&self) -> &str {
+        self.blob_uri
     }
 
     pub(crate) fn perform_request<F>(
