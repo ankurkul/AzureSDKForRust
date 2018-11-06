@@ -7,12 +7,14 @@ extern crate hyper_tls;
 extern crate log;
 extern crate md5;
 extern crate tokio_core;
+extern crate url;
 
 use azure_sdk_for_rust::prelude::*;
 use azure_sdk_for_rust::storage::container::PublicAccess;
 use futures::future::*;
 use std::error::Error;
 use tokio_core::reactor::Core;
+use url::Url;
 
 fn main() {
     env_logger::init();
@@ -25,7 +27,9 @@ fn code() -> Result<(), Box<Error>> {
     let mut core = Core::new()?;
 
     // this will only work with the emulator
-    let client = Client::new("", "")?;
+    let blob_storage_url = "http://127.0.0.1:10000";
+    let table_storage_url = "http://127.0.0.1:10002";
+    let client = Client::emulator(&Url::parse(blob_storage_url)?, &Url::parse(table_storage_url)?)?;
 
     // create container
     let future = client
