@@ -340,7 +340,10 @@ pub(crate) fn extract_status_and_body(resp: hyper::client::ResponseFuture) -> im
         res.into_body()
             .concat2()
             .from_err()
-            .and_then(move |body| Ok((status, str::from_utf8(&body)?.to_owned())))
+            .and_then(move |body| {
+                trace!("extract_status_and_body called(status == {:?}, body = {:?}", status, str::from_utf8(&body)?.to_owned());
+                Ok((status, str::from_utf8(&body)?.to_owned()))
+            })
     })
 }
 
