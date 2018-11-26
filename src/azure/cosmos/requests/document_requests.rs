@@ -34,7 +34,9 @@ impl CreateDocumentRequest {
         let mut req = self.request;
         future::result(self.payload)
             .from_err()
-            .and_then(move |payload| Ok(req.body(payload.into())?))
+            .and_then(move |payload| {
+                Ok(req.body(payload.into())?)
+            })
             .and_then(move |r| check_status_extract_body(hc.request(r), StatusCode::CREATED))
             .and_then(move |body| Ok(serde_json::from_str::<DocumentAttributes>(&body)?))
     }
